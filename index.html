@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galaxer — Conquer the Stars</title>
+  <meta name="description" content="Galaxer is a real-time multiplayer space conquest game. Claim planets, build fleets, and dominate the galaxy.">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-deep: #08030a;
+      --bg-section: #0e060c;
+      --blue-glow: #e8a830;
+      --blue-dim: #a07020;
+      --amber: #f0c040;
+      --amber-dim: #b88630;
+      --text: #f0e8e0;
+      --text-muted: #a08888;
+      --card-bg: #140a0e;
+      --card-border: #2a1820;
+      --radius: 12px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Star field ── */
+
+    .starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .starfield .layer {
+      position: absolute;
+      inset: 0;
+      background-repeat: repeat;
+    }
+
+    /* Faint dense dust — tiny background stars */
+    .starfield .layer-1 {
+      background-image:
+        radial-gradient(0.8px 0.8px at 12px 14px, #ffffff20, transparent),
+        radial-gradient(0.6px 0.6px at 38px 78px, #ffffff18, transparent),
+        radial-gradient(0.7px 0.7px at 72px 22px, #ffffff1a, transparent),
+        radial-gradient(0.8px 0.8px at 95px 110px, #ffffff22, transparent),
+        radial-gradient(0.6px 0.6px at 130px 45px, #ffffff16, transparent),
+        radial-gradient(0.7px 0.7px at 155px 130px, #ffffff1c, transparent),
+        radial-gradient(0.8px 0.8px at 188px 68px, #ffffff20, transparent),
+        radial-gradient(0.6px 0.6px at 210px 155px, #ffffff18, transparent),
+        radial-gradient(0.7px 0.7px at 248px 30px, #ffffff1a, transparent),
+        radial-gradient(0.8px 0.8px at 270px 120px, #ffffff22, transparent),
+        radial-gradient(0.6px 0.6px at 305px 88px, #ffffff16, transparent),
+        radial-gradient(0.7px 0.7px at 338px 160px, #ffffff1c, transparent),
+        radial-gradient(0.8px 0.8px at 355px 10px, #ffffff20, transparent),
+        radial-gradient(0.6px 0.6px at 385px 95px, #ffffff18, transparent),
+        radial-gradient(0.7px 0.7px at 410px 145px, #ffffff1a, transparent),
+        radial-gradient(0.8px 0.8px at 438px 55px, #ffffff22, transparent),
+        radial-gradient(0.6px 0.6px at 462px 170px, #ffffff16, transparent),
+        radial-gradient(0.7px 0.7px at 18px 140px, #ffffff1c, transparent),
+        radial-gradient(0.8px 0.8px at 55px 165px, #ffffff18, transparent),
+        radial-gradient(0.6px 0.6px at 108px 8px, #ffffff20, transparent),
+        radial-gradient(0.7px 0.7px at 168px 175px, #ffffff16, transparent),
+        radial-gradient(0.8px 0.8px at 228px 98px, #ffffff1a, transparent),
+        radial-gradient(0.6px 0.6px at 292px 52px, #ffffff22, transparent),
+        radial-gradient(0.7px 0.7px at 365px 115px, #ffffff18, transparent),
+        radial-gradient(0.8px 0.8px at 425px 28px, #ffffff1c, transparent),
+        radial-gradient(0.6px 0.6px at 475px 138px, #ffffff20, transparent),
+        radial-gradient(0.7px 0.7px at 142px 82px, #ffffff16, transparent),
+        radial-gradient(0.8px 0.8px at 318px 42px, #ffffff1a, transparent),
+        radial-gradient(0.6px 0.6px at 448px 108px, #ffffff22, transparent),
+        radial-gradient(0.7px 0.7px at 68px 48px, #ffffff18, transparent);
+      background-size: 500px 190px;
+    }
+
+    /* Medium stars */
+    .starfield .layer-2 {
+      background-image:
+        radial-gradient(1px 1px at 30px 40px, #ffffff38, transparent),
+        radial-gradient(1px 1px at 110px 180px, #ffffff30, transparent),
+        radial-gradient(1px 1px at 200px 70px, #ffffff35, transparent),
+        radial-gradient(1px 1px at 280px 260px, #ffffff28, transparent),
+        radial-gradient(1px 1px at 350px 120px, #ffffff3a, transparent),
+        radial-gradient(1px 1px at 440px 310px, #ffffff32, transparent),
+        radial-gradient(1px 1px at 520px 50px, #ffffff36, transparent),
+        radial-gradient(1px 1px at 600px 220px, #ffffff2e, transparent),
+        radial-gradient(1px 1px at 680px 150px, #ffffff34, transparent),
+        radial-gradient(1px 1px at 60px 290px, #ffffff30, transparent),
+        radial-gradient(1px 1px at 160px 340px, #ffffff38, transparent),
+        radial-gradient(1px 1px at 250px 10px, #ffffff2c, transparent),
+        radial-gradient(1px 1px at 330px 380px, #ffffff36, transparent),
+        radial-gradient(1px 1px at 480px 200px, #ffffff32, transparent),
+        radial-gradient(1px 1px at 560px 340px, #ffffff28, transparent),
+        radial-gradient(1px 1px at 650px 80px, #ffffff3a, transparent),
+        radial-gradient(1px 1px at 720px 300px, #ffffff30, transparent),
+        radial-gradient(1px 1px at 90px 110px, #ffffff34, transparent),
+        radial-gradient(1px 1px at 380px 240px, #ffffff2e, transparent),
+        radial-gradient(1px 1px at 500px 370px, #ffffff36, transparent);
+      background-size: 760px 400px;
+    }
+
+    /* Brighter visible stars */
+    .starfield .layer-3 {
+      background-image:
+        radial-gradient(1.3px 1.3px at 50px 60px, #ffffff55, transparent),
+        radial-gradient(1.5px 1.5px at 180px 200px, #ffffff50, transparent),
+        radial-gradient(1.2px 1.2px at 320px 90px, #ffffff48, transparent),
+        radial-gradient(1.4px 1.4px at 460px 280px, #ffffff52, transparent),
+        radial-gradient(1.3px 1.3px at 600px 140px, #ffffff4a, transparent),
+        radial-gradient(1.5px 1.5px at 740px 320px, #ffffff50, transparent),
+        radial-gradient(1.2px 1.2px at 110px 360px, #ffffff45, transparent),
+        radial-gradient(1.4px 1.4px at 250px 30px, #ffffff55, transparent),
+        radial-gradient(1.3px 1.3px at 400px 400px, #ffffff48, transparent),
+        radial-gradient(1.5px 1.5px at 550px 180px, #ffffff52, transparent),
+        radial-gradient(1.2px 1.2px at 680px 50px, #ffffff4a, transparent),
+        radial-gradient(1.4px 1.4px at 800px 240px, #ffffff50, transparent),
+        radial-gradient(1.3px 1.3px at 850px 100px, #ffffff45, transparent),
+        radial-gradient(1.5px 1.5px at 900px 380px, #ffffff55, transparent);
+      background-size: 950px 440px;
+    }
+
+    /* Bright feature stars with color hints */
+    .starfield .layer-4 {
+      background-image:
+        radial-gradient(2px 2px at 120px 80px, #ffffff70, transparent),
+        radial-gradient(2.2px 2.2px at 400px 200px, #ffccaa65, transparent),
+        radial-gradient(1.8px 1.8px at 700px 120px, #ffe8aa60, transparent),
+        radial-gradient(2px 2px at 300px 350px, #ffffff68, transparent),
+        radial-gradient(2.5px 2.5px at 550px 50px, #ffd89075, transparent),
+        radial-gradient(1.8px 1.8px at 850px 300px, #ffbbaa58, transparent),
+        radial-gradient(2px 2px at 150px 250px, #ffe8aa55, transparent),
+        radial-gradient(2.2px 2.2px at 480px 420px, #ffffff6a, transparent),
+        radial-gradient(1.8px 1.8px at 650px 380px, #ffccaa60, transparent),
+        radial-gradient(2px 2px at 950px 180px, #ffd89070, transparent);
+      background-size: 1020px 470px;
+    }
+
+    /* Twinkle overlay */
+    .starfield .twinkle-layer {
+      background-image:
+        radial-gradient(1.8px 1.8px at 90px 60px, #ffffffcc, transparent),
+        radial-gradient(1.5px 1.5px at 310px 190px, #ffffffaa, transparent),
+        radial-gradient(2px 2px at 520px 120px, #ffffffbb, transparent),
+        radial-gradient(1.6px 1.6px at 200px 380px, #ffffffaa, transparent),
+        radial-gradient(1.8px 1.8px at 680px 290px, #ffffffcc, transparent),
+        radial-gradient(1.5px 1.5px at 440px 420px, #ffffff99, transparent),
+        radial-gradient(1.7px 1.7px at 760px 70px, #ffffffbb, transparent),
+        radial-gradient(1.8px 1.8px at 130px 300px, #ffffffaa, transparent),
+        radial-gradient(2px 2px at 580px 460px, #ffffffcc, transparent),
+        radial-gradient(1.6px 1.6px at 350px 30px, #ffffff99, transparent),
+        radial-gradient(1.8px 1.8px at 900px 200px, #ffffffbb, transparent),
+        radial-gradient(1.5px 1.5px at 820px 400px, #ffffffaa, transparent);
+      background-size: 980px 500px;
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+
+    .starfield .twinkle-layer-2 {
+      background-image:
+        radial-gradient(1.7px 1.7px at 60px 180px, #ffffffbb, transparent),
+        radial-gradient(1.9px 1.9px at 250px 90px, #ffffffcc, transparent),
+        radial-gradient(1.5px 1.5px at 470px 340px, #ffffffaa, transparent),
+        radial-gradient(1.8px 1.8px at 630px 200px, #ffffffbb, transparent),
+        radial-gradient(1.6px 1.6px at 380px 450px, #ffffff99, transparent),
+        radial-gradient(2px 2px at 170px 430px, #ffffffcc, transparent),
+        radial-gradient(1.7px 1.7px at 710px 380px, #ffffffaa, transparent),
+        radial-gradient(1.9px 1.9px at 540px 60px, #ffffffbb, transparent),
+        radial-gradient(1.5px 1.5px at 850px 150px, #ffffffcc, transparent),
+        radial-gradient(1.8px 1.8px at 950px 350px, #ffffffaa, transparent);
+      background-size: 1040px 500px;
+      animation: twinkle 5s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.1; }
+      50% { opacity: 0.65; }
+      100% { opacity: 0.15; }
+    }
+
+    /* ── Milky Way band ── */
+
+    .milkyway {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-25deg) scale(1.6);
+      transform-origin: center center;
+    }
+
+    .milkyway .band {
+      position: absolute;
+      top: 35%;
+      left: -20%;
+      right: -20%;
+      height: 30%;
+      background:
+        radial-gradient(ellipse 120% 100% at 20% 50%, rgba(180, 80, 100, 0.05), transparent 70%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, rgba(200, 100, 80, 0.06), transparent 60%),
+        radial-gradient(ellipse 120% 100% at 80% 50%, rgba(170, 70, 90, 0.05), transparent 70%);
+    }
+
+    .milkyway .band-core {
+      position: absolute;
+      top: 42%;
+      left: -10%;
+      right: -10%;
+      height: 16%;
+      background:
+        radial-gradient(ellipse 80% 100% at 30% 50%, rgba(220, 100, 80, 0.07), transparent 60%),
+        radial-gradient(ellipse 60% 100% at 60% 50%, rgba(200, 90, 70, 0.08), transparent 55%),
+        radial-gradient(ellipse 80% 100% at 85% 50%, rgba(210, 80, 90, 0.06), transparent 60%);
+    }
+
+    /* Dense star clusters along the band */
+    .milkyway .band-stars {
+      position: absolute;
+      top: 38%;
+      left: -10%;
+      right: -10%;
+      height: 24%;
+      background-image:
+        radial-gradient(0.8px 0.8px at 5% 30%, #ffffff28, transparent),
+        radial-gradient(0.6px 0.6px at 8% 55%, #ffffff20, transparent),
+        radial-gradient(0.7px 0.7px at 12% 40%, #ffffff24, transparent),
+        radial-gradient(0.9px 0.9px at 15% 65%, #ffffff2a, transparent),
+        radial-gradient(0.6px 0.6px at 18% 35%, #ffffff1e, transparent),
+        radial-gradient(0.8px 0.8px at 22% 50%, #ffffff26, transparent),
+        radial-gradient(0.7px 0.7px at 25% 70%, #ffffff22, transparent),
+        radial-gradient(0.9px 0.9px at 28% 45%, #ffffff2c, transparent),
+        radial-gradient(0.6px 0.6px at 32% 60%, #ffffff20, transparent),
+        radial-gradient(0.8px 0.8px at 35% 38%, #ffffff28, transparent),
+        radial-gradient(0.7px 0.7px at 38% 72%, #ffffff24, transparent),
+        radial-gradient(0.9px 0.9px at 42% 48%, #ffffff2a, transparent),
+        radial-gradient(0.6px 0.6px at 45% 32%, #ffffff1e, transparent),
+        radial-gradient(1px 1px at 48% 55%, #ffffff30, transparent),
+        radial-gradient(0.8px 0.8px at 52% 42%, #ffffff28, transparent),
+        radial-gradient(1px 1px at 55% 62%, #ffffff32, transparent),
+        radial-gradient(0.7px 0.7px at 58% 38%, #ffffff24, transparent),
+        radial-gradient(0.9px 0.9px at 62% 52%, #ffffff2c, transparent),
+        radial-gradient(1px 1px at 65% 68%, #ffffff30, transparent),
+        radial-gradient(0.8px 0.8px at 68% 45%, #ffffff28, transparent),
+        radial-gradient(0.7px 0.7px at 72% 58%, #ffffff24, transparent),
+        radial-gradient(0.9px 0.9px at 75% 35%, #ffffff2a, transparent),
+        radial-gradient(0.6px 0.6px at 78% 65%, #ffffff20, transparent),
+        radial-gradient(0.8px 0.8px at 82% 42%, #ffffff26, transparent),
+        radial-gradient(0.7px 0.7px at 85% 55%, #ffffff22, transparent),
+        radial-gradient(0.9px 0.9px at 88% 48%, #ffffff2c, transparent),
+        radial-gradient(0.6px 0.6px at 92% 62%, #ffffff20, transparent),
+        radial-gradient(0.8px 0.8px at 95% 40%, #ffffff28, transparent),
+        radial-gradient(0.7px 0.7px at 98% 58%, #ffffff24, transparent);
+    }
+
+    /* ── Nebula clusters ── */
+
+    .nebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      mix-blend-mode: screen;
+    }
+
+    .nebula-1 {
+      width: 500px;
+      height: 350px;
+      top: 8%;
+      right: 5%;
+      background: radial-gradient(ellipse at 40% 50%,
+        rgba(160, 30, 50, 0.10) 0%,
+        rgba(120, 20, 60, 0.06) 40%,
+        transparent 70%);
+      filter: blur(50px);
+    }
+
+    .nebula-2 {
+      width: 400px;
+      height: 300px;
+      bottom: 15%;
+      left: 2%;
+      background: radial-gradient(ellipse at 60% 40%,
+        rgba(180, 40, 60, 0.09) 0%,
+        rgba(140, 30, 70, 0.05) 45%,
+        transparent 70%);
+      filter: blur(45px);
+    }
+
+    .nebula-3 {
+      width: 350px;
+      height: 250px;
+      top: 45%;
+      left: 35%;
+      background: radial-gradient(ellipse at 50% 50%,
+        rgba(150, 25, 55, 0.08) 0%,
+        rgba(120, 15, 45, 0.05) 40%,
+        transparent 70%);
+      filter: blur(55px);
+    }
+
+    .nebula-4 {
+      width: 300px;
+      height: 400px;
+      top: 60%;
+      right: 15%;
+      background: radial-gradient(ellipse at 45% 55%,
+        rgba(170, 35, 65, 0.08) 0%,
+        rgba(130, 20, 50, 0.04) 45%,
+        transparent 70%);
+      filter: blur(50px);
+    }
+
+    .nebula-5 {
+      width: 450px;
+      height: 280px;
+      top: 20%;
+      left: 15%;
+      background: radial-gradient(ellipse at 55% 45%,
+        rgba(160, 30, 40, 0.08) 0%,
+        rgba(140, 25, 55, 0.04) 40%,
+        transparent 70%);
+      filter: blur(60px);
+    }
+
+    /* ── Shooting stars ── */
+
+    .shooting-star {
+      position: absolute;
+      width: 120px;
+      height: 1.5px;
+      background: linear-gradient(90deg, rgba(255,220,150,0.9), rgba(255,180,80,0.4), transparent);
+      border-radius: 1px;
+      opacity: 0;
+      filter: drop-shadow(0 0 4px rgba(232,168,48,0.6));
+    }
+
+    .shooting-star-1 {
+      top: 12%;
+      left: 15%;
+      transform: rotate(-35deg);
+      animation: shoot1 12s 3s linear infinite;
+    }
+
+    .shooting-star-2 {
+      top: 38%;
+      left: 55%;
+      width: 90px;
+      height: 1px;
+      transform: rotate(-28deg);
+      animation: shoot2 15s 9s linear infinite;
+    }
+
+    .shooting-star-3 {
+      top: 65%;
+      left: 30%;
+      width: 100px;
+      height: 1.2px;
+      transform: rotate(-40deg);
+      animation: shoot3 18s 0s linear infinite;
+    }
+
+    @keyframes shoot1 {
+      0% { opacity: 0; transform: rotate(-35deg) translateX(0); }
+      1% { opacity: 1; }
+      3% { opacity: 1; transform: rotate(-35deg) translateX(300px); }
+      4% { opacity: 0; transform: rotate(-35deg) translateX(400px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes shoot2 {
+      0% { opacity: 0; transform: rotate(-28deg) translateX(0); }
+      1% { opacity: 1; }
+      3% { opacity: 1; transform: rotate(-28deg) translateX(250px); }
+      4% { opacity: 0; transform: rotate(-28deg) translateX(350px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes shoot3 {
+      0% { opacity: 0; transform: rotate(-40deg) translateX(0); }
+      1% { opacity: 1; }
+      2.5% { opacity: 1; transform: rotate(-40deg) translateX(280px); }
+      3.5% { opacity: 0; transform: rotate(-40deg) translateX(380px); }
+      100% { opacity: 0; }
+    }
+
+    /* ── Layout ── */
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      padding: 100px 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ── Navigation ── */
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    nav.scrolled {
+      background: rgba(8, 3, 10, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(232, 168, 48, 0.12);
+    }
+
+    nav .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    nav .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    nav .logo span {
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--blue-glow);
+    }
+
+    /* ── Hero ── */
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 64px;
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--bg-deep));
+      pointer-events: none;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(160, 40, 50, 0.06), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 24px rgba(232, 168, 48, 0.5));
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      letter-spacing: 0.12em;
+      line-height: 1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--blue-glow) 50%, var(--amber) 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 8s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero .tagline {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      margin-bottom: 48px;
+    }
+
+    .hero .cta-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-glow), #c07818);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(232, 168, 48, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 32px rgba(232, 168, 48, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--blue-dim);
+      color: var(--text);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      animation: pulse-fade 3s ease-in-out infinite;
+    }
+
+    .scroll-hint .chevron {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(45deg);
+    }
+
+    @keyframes pulse-fade {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    /* ── About ── */
+
+    #about {
+      background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-section) 50%, var(--bg-deep) 100%);
+      position: relative;
+    }
+
+    #about::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 70% 50%, rgba(140, 30, 50, 0.04), transparent 70%);
+      pointer-events: none;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      margin-top: 48px;
+    }
+
+    .about-text p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .about-text p strong {
+      color: var(--text);
+    }
+
+    .about-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .planet-demo {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #c49660, #6b3a1a 60%, #2a1508 100%);
+      box-shadow:
+        0 0 60px rgba(232, 168, 48, 0.25),
+        0 0 120px rgba(200, 120, 30, 0.12),
+        inset -30px -20px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .planet-demo::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid var(--amber);
+      opacity: 0.6;
+      animation: ring-pulse 4s ease-in-out infinite;
+    }
+
+    .planet-demo::after {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1px solid var(--amber);
+      opacity: 0.2;
+      animation: ring-pulse 4s ease-in-out infinite 1s;
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { opacity: 0.15; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.03); }
+    }
+
+    /* ── How to Play ── */
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .step {
+      text-align: center;
+      padding: 32px 20px;
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      position: relative;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--blue-dim);
+      transform: translateY(-4px);
+    }
+
+    .step-number {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 2.5rem;
+      color: var(--blue-glow);
+      opacity: 0.15;
+      position: absolute;
+      top: 12px;
+      right: 16px;
+    }
+
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .step h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    .step p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── Features ── */
+
+    #features {
+      background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-section) 50%, var(--bg-deep) 100%);
+      position: relative;
+    }
+
+    #features::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 30% 50%, rgba(150, 35, 45, 0.04), transparent 70%);
+      pointer-events: none;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .feature-card {
+      padding: 36px 32px;
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--amber-dim);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      background: rgba(232, 168, 48, 0.08);
+      border: 1px solid rgba(232, 168, 48, 0.15);
+    }
+
+    .feature-card:nth-child(even) .feature-icon {
+      background: rgba(200, 100, 50, 0.08);
+      border-color: rgba(200, 100, 50, 0.15);
+    }
+
+    .feature-card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.03em;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* ── Screenshots ── */
+
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .screenshot {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      transition: border-color 0.3s, transform 0.3s;
+      background: var(--card-bg);
+    }
+
+    .screenshot:hover {
+      border-color: var(--blue-dim);
+      transform: translateY(-4px);
+    }
+
+    .screenshot img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .screenshot-placeholder {
+      aspect-ratio: 16 / 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .screenshot-placeholder .placeholder-icon {
+      font-size: 2rem;
+    }
+
+    .screenshot-placeholder span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Footer ── */
+
+    footer {
+      padding: 48px 24px;
+      border-top: 1px solid var(--card-border);
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .footer-logo img {
+      width: 24px;
+      height: 24px;
+      opacity: 0.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--blue-glow);
+    }
+
+    .footer-credit {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 768px) {
+      section {
+        padding: 72px 20px;
+      }
+
+      nav .nav-links {
+        display: none;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .about-visual {
+        order: -1;
+      }
+
+      .planet-demo {
+        width: 160px;
+        height: 160px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .screenshots-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .hero .cta-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Star field background -->
+  <div class="starfield" aria-hidden="true">
+    <div class="layer layer-1"></div>
+    <div class="layer layer-2"></div>
+    <div class="layer layer-3"></div>
+    <div class="layer twinkle-layer"></div>
+    <div class="layer twinkle-layer-2"></div>
+    <div class="shooting-star shooting-star-1"></div>
+    <div class="shooting-star shooting-star-2"></div>
+    <div class="shooting-star shooting-star-3"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <img src="assets/icon.png" alt="Galaxer" width="32" height="32">
+        <span>GALAXER</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#how-to-play">How to Play</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#screenshots">Screenshots</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <img src="assets/icon.png" alt="" class="hero-icon" width="80" height="80">
+        <h1>GALAXER</h1>
+        <p class="tagline">Conquer the Stars</p>
+        <div class="cta-group">
+          <a href="#about" class="btn btn-primary">Learn More</a>
+          <a href="#screenshots" class="btn btn-secondary">See Gameplay</a>
+        </div>
+      </div>
+      <div class="scroll-hint">
+        <div class="chevron"></div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="container">
+        <div class="section-label">About the Game</div>
+        <div class="section-title">Real-Time Space Conquest</div>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>
+              <strong>Galaxer</strong> is a real-time multiplayer strategy game set in the depths of space.
+              Claim planets, build your fleet, and wage interstellar war against rival commanders.
+            </p>
+            <p>
+              Every planet you own generates ships over time. Deploy your growing fleet to
+              overwhelm neutral worlds or strike enemy territory. The galaxy is procedurally
+              generated each round, so no two games play the same.
+            </p>
+            <p>
+              Simple rules, deep strategy. One match can shift from calm expansion to
+              all-out galactic warfare in seconds.
+            </p>
+          </div>
+          <div class="about-visual">
+            <div class="planet-demo" role="img" aria-label="Animated planet with ownership ring"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to Play -->
+    <section id="how-to-play">
+      <div class="container">
+        <div class="section-label">How to Play</div>
+        <div class="section-title">Four Steps to Galactic Domination</div>
+        <div class="section-desc">Master these basics and the galaxy is yours.</div>
+        <div class="steps">
+          <div class="step">
+            <span class="step-number">01</span>
+            <span class="step-icon" aria-hidden="true">&#127759;</span>
+            <h3>Claim Planets</h3>
+            <p>Start with your home world. Send ships to nearby neutral planets to expand your territory.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">02</span>
+            <span class="step-icon" aria-hidden="true">&#9881;&#65039;</span>
+            <h3>Build Fleets</h3>
+            <p>Each planet generates ships over time. Larger planets produce faster. Grow your empire to outpace rivals.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">03</span>
+            <span class="step-icon" aria-hidden="true">&#128640;</span>
+            <h3>Deploy Ships</h3>
+            <p>Select a planet and send your fleet toward any target. Ships fly in real time across the map.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">04</span>
+            <span class="step-icon" aria-hidden="true">&#9876;&#65039;</span>
+            <h3>Conquer</h3>
+            <p>Overwhelm enemy planets with superior numbers. Eliminate all opponents to win the galaxy.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+      <div class="container">
+        <div class="section-label">Features</div>
+        <div class="section-title">Built for Strategy</div>
+        <div class="section-desc">Everything you need for intense real-time galactic warfare.</div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">&#128101;</div>
+            <h3>Multiplayer</h3>
+            <p>Battle up to 16 players simultaneously in fast-paced matches. Form alliances, betray friends, dominate the leaderboard.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">&#9889;</div>
+            <h3>Real-Time Physics</h3>
+            <p>Ships move with real-time physics across the star map. Every deployment is a tactical commitment with no take-backs.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">&#127776;</div>
+            <h3>Procedural Maps</h3>
+            <p>Every match generates a unique galaxy. Planet sizes, positions, and resources change each game, keeping strategy fresh.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">&#129504;</div>
+            <h3>Strategic Depth</h3>
+            <p>Simple mechanics, emergent complexity. Timing, positioning, and reading your opponents matter more than brute force.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section id="screenshots">
+      <div class="container">
+        <div class="section-label">Screenshots</div>
+        <div class="section-title">See the Galaxy</div>
+        <div class="section-desc">A glimpse of the action.</div>
+        <div class="screenshots-grid">
+          <div class="screenshot">
+            <img src="assets/screenshots/gameplay-1.png" alt="Galaxer gameplay — planets with ownership rings and ship counts" loading="lazy">
+          </div>
+          <div class="screenshot">
+            <img src="assets/screenshots/gameplay-2.png" alt="Galaxer gameplay — fleet deployment across the star map" loading="lazy">
+          </div>
+          <div class="screenshot">
+            <div class="screenshot-placeholder">
+              <span class="placeholder-icon" aria-hidden="true">&#128248;</span>
+              <span>Coming Soon</span>
+            </div>
+          </div>
+          <div class="screenshot">
+            <div class="screenshot-placeholder">
+              <span class="placeholder-icon" aria-hidden="true">&#128248;</span>
+              <span>Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <img src="assets/icon.png" alt="" width="24" height="24">
+          <span>GALAXER</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#screenshots">Screenshots</a></li>
+        </ul>
+        <p class="footer-credit">&copy; Twilight Coders, LLC</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Navbar scroll effect
+    const nav = document.querySelector('nav');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          nav.classList.toggle('scrolled', window.scrollY > 40);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  </script>
+
+</body>
+</html>
