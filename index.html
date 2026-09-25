@@ -349,7 +349,7 @@
       <img class="wordmark" src="assets/img/wordmark.svg" alt="Galaxer">
       <p class="tag">Planets grow fleets. You send them. The <span class="en">last commander</span> standing takes the <span class="em">galaxy</span>.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/download/Galaxer-latest.dmg" id="dl-hero">
+        <a class="btn btn-primary" href="https://github.com/voltechs/galaxer.net/releases/latest/download/Galaxer.dmg" id="dl-hero">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
           Download for macOS
         </a>
@@ -493,12 +493,12 @@
 
         <div class="dl-grid">
           <div class="panel dl-main">
-            <h3>Galaxer <span id="ver-name" style="color:var(--cyan)">Beta</span></h3>
-            <a class="btn btn-primary big" href="/download/Galaxer-latest.dmg" id="dl-main">
+            <h3>Galaxer <span id="ver-name" style="color:var(--cyan)">1.0 Beta 1</span></h3>
+            <a class="btn btn-primary big" href="https://github.com/voltechs/galaxer.net/releases/latest/download/Galaxer.dmg" id="dl-main">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
               Download the DMG
             </a>
-            <p class="meta" id="dl-meta">Apple Silicon · <span id="dl-size">~— MB</span> · <span id="dl-ver">latest build</span></p>
+            <p class="meta" id="dl-meta">Apple Silicon · <span id="dl-size">33 MB</span> · <span id="dl-ver">1.0 Beta 1</span> · <span class="js-macos">macOS 26+</span></p>
             <div class="gate">
               <b>First launch:</b> the beta is ad-hoc signed, so macOS won't open it on a double-click yet.
               Right-click (or Control-click) <code>Galaxer.app</code> → <code>Open</code> → <code>Open</code>. You only do this once.
@@ -508,10 +508,10 @@
           <div class="panel specs">
             <h4>System requirements</h4>
             <dl>
-              <dt>Platform</dt><dd id="req-plat">macOS, Apple Silicon</dd>
-              <dt>macOS</dt><dd id="req-os">13 Ventura +</dd>
+              <dt>Chip</dt><dd id="req-plat">Apple Silicon (arm64)</dd>
+              <dt>macOS</dt><dd id="req-os" class="js-macos">macOS 26 (Tahoe)+</dd>
               <dt>Graphics</dt><dd>Metal / OpenGL</dd>
-              <dt>Disk</dt><dd id="req-disk">~— MB</dd>
+              <dt>Download</dt><dd id="req-disk">33 MB</dd>
               <dt>Online play</dt><dd>UDP 11727</dd>
             </dl>
           </div>
@@ -519,12 +519,12 @@
 
         <div class="panel changelog">
           <h4>Changelog</h4>
-          <div class="rel"><span class="v" id="cl-ver">Beta</span><span class="tagd" id="cl-date">current build</span></div>
+          <div class="rel"><span class="v" id="cl-ver">1.0 Beta 1</span><span class="tagd" id="cl-date">First public beta</span></div>
           <ul>
-            <li>New neon renderer: the game world now draws through a dedicated HDR-bloom pipeline.</li>
-            <li>Rebuilt on SDL3 — native Apple-Silicon app, SFML fully removed.</li>
-            <li>Multiplayer verified end-to-end: authoritative host, client prediction, reliable-UDP snapshots.</li>
-            <li>Reworked HUD: objectives, minimap, selected-planet readout, and action bar.</li>
+            <li>Skirmish against the AI on a fresh, procedurally seeded galaxy every match.</li>
+            <li>A 10-level single-player campaign to learn the loop.</li>
+            <li>Online multiplayer with a matchmaking lobby — up to 16 commanders.</li>
+            <li>The new neon look: a dedicated HDR-bloom renderer for the whole game world.</li>
           </ul>
         </div>
       </div>
@@ -549,8 +549,14 @@
   </footer>
 
   <script>
-    // Nav gains a background once you scroll past the hero lip.
     (function () {
+      // Minimum macOS — single source of truth. `release` may lower this; change it here only.
+      var MIN_MACOS = 'macOS 26 (Tahoe)+';
+      Array.prototype.forEach.call(document.querySelectorAll('.js-macos'), function (el) {
+        el.textContent = MIN_MACOS;
+      });
+
+      // Nav gains a background once you scroll past the hero lip.
       var nav = document.getElementById('nav');
       var ticking = false;
       function upd() { nav.classList.toggle('stuck', window.scrollY > 32); ticking = false; }
