@@ -362,7 +362,7 @@
         </a>
         <a class="btn" href="#play">See how it plays</a>
       </div>
-      <p class="cta-note">Free · <b>Apple Silicon</b> · first launch needs one right-click — <a href="#download">here's why</a></p>
+      <p class="cta-note">Free · <b>Universal</b> — Apple Silicon + Intel · first launch needs one right-click — <a href="#download">here's why</a></p>
       <div class="platform-chips">
         <span class="chip">Real-time <b>RTS</b></span>
         <span class="chip">Up to <b>16</b> players</span>
@@ -462,7 +462,7 @@
           <div class="panel feat">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg></div>
             <h3>Native macOS</h3>
-            <p>A real Apple-Silicon app built on SDL3 — no browser, no launcher, no account. Download, right-click, play.</p>
+            <p>A real macOS app — universal for Apple Silicon and Intel, built on SDL3. No browser, no launcher, no account. Download, right-click, play.</p>
           </div>
         </div>
       </div>
@@ -506,7 +506,7 @@
               <span class="lbl-live">Download the DMG</span><span class="lbl-soon">Download &mdash; coming soon</span>
             </a>
             <p class="soon-note" id="soon-note">Galaxer 1.0 Beta 1 posts here any day now — the button goes live the moment it drops.</p>
-            <p class="meta" id="dl-meta">Apple Silicon · <span id="dl-size">33 MB</span> · <span id="dl-ver">1.0 Beta 1</span> · <span class="js-macos">macOS 26+</span></p>
+            <p class="meta" id="dl-meta">Universal · <span id="dl-size">31 MB</span> · <span id="dl-ver">1.0 Beta 1</span> · <span class="js-macos">macOS 11+</span></p>
             <div class="gate">
               <b>First launch:</b> the beta is ad-hoc signed, so macOS won't open it on a double-click yet.
               Right-click (or Control-click) <code>Galaxer.app</code> → <code>Open</code> → <code>Open</code>. You only do this once.
@@ -516,10 +516,10 @@
           <div class="panel specs">
             <h4>System requirements</h4>
             <dl>
-              <dt>Chip</dt><dd id="req-plat">Apple Silicon (arm64)</dd>
-              <dt>macOS</dt><dd id="req-os" class="js-macos">macOS 26 (Tahoe)+</dd>
+              <dt>Chip</dt><dd id="req-plat">Universal (Apple Silicon + Intel)</dd>
+              <dt>macOS</dt><dd id="req-os" class="js-macos">macOS 11 (Big Sur)+</dd>
               <dt>Graphics</dt><dd>Metal / OpenGL</dd>
-              <dt>Download</dt><dd id="req-disk">33 MB</dd>
+              <dt>Download</dt><dd id="req-disk">31 MB</dd>
               <dt>Online play</dt><dd>UDP 11727</dd>
             </dl>
           </div>
@@ -559,7 +559,7 @@
   <script>
     (function () {
       // Minimum macOS — single source of truth. `release` may lower this; change it here only.
-      var MIN_MACOS = 'macOS 26 (Tahoe)+';
+      var MIN_MACOS = 'macOS 11 (Big Sur)+';
       Array.prototype.forEach.call(document.querySelectorAll('.js-macos'), function (el) {
         el.textContent = MIN_MACOS;
       });
