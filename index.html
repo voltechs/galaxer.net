@@ -441,14 +441,14 @@
         <p class="tag">Planets grow fleets. You send them. The <span class="en">last commander</span> standing takes the <span class="em">galaxy</span>.</p>
 
         <nav class="menu-panel" aria-label="Get Galaxer">
-          <a class="menu-btn primary soon" href="https://github.com/TwilightCoders/galaxer/releases/latest/download/Galaxer.dmg" id="dl-hero" data-dl>
+          <a class="menu-btn primary soon" href="https://downloads.galaxer.net/latest/Galaxer.dmg" id="dl-hero" data-dl>
             <span class="l">
               <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
               <span class="lbl-live">Download for macOS</span><span class="lbl-soon">Download &mdash; coming soon</span>
             </span>
             <span class="r">31 MB</span>
           </a>
-          <a class="menu-btn soon" href="https://github.com/TwilightCoders/galaxer/releases/latest/download/Galaxer-windows-x64.zip" id="dl-hero-win" data-dl>
+          <a class="menu-btn soon" href="https://downloads.galaxer.net/latest/Galaxer-windows-x64.zip" id="dl-hero-win" data-dl>
             <span class="l">
               <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H4z"/><path d="M2 21h20"/></svg>
               <span class="lbl-live">Download for Windows</span><span class="lbl-soon">Windows &mdash; coming soon</span>
@@ -604,11 +604,11 @@
         <div class="dl-grid">
           <div class="panel dl-main">
             <h3>Galaxer <span id="ver-name" style="color:var(--cyan)">1.0 Beta 1</span></h3>
-            <a class="btn btn-primary big soon" href="https://github.com/TwilightCoders/galaxer/releases/latest/download/Galaxer.dmg" id="dl-main" data-dl>
+            <a class="btn btn-primary big soon" href="https://downloads.galaxer.net/latest/Galaxer.dmg" id="dl-main" data-dl>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
               <span class="lbl-live">Download for macOS</span><span class="lbl-soon">macOS &mdash; coming soon</span>
             </a>
-            <a class="btn btn-primary big soon" href="https://github.com/TwilightCoders/galaxer/releases/latest/download/Galaxer-windows-x64.zip" id="dl-main-win" data-dl>
+            <a class="btn btn-primary big soon" href="https://downloads.galaxer.net/latest/Galaxer-windows-x64.zip" id="dl-main-win" data-dl>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
               <span class="lbl-live">Download for Windows</span><span class="lbl-soon">Windows &mdash; coming soon</span>
             </a>
@@ -674,7 +674,7 @@
       });
 
       // Release gate — flip to true once a vX.Y.Z tag has published the DMG + zip to
-      // TwilightCoders/galaxer's Releases (the repo must be public for anonymous downloads).
+      // downloads.galaxer.net (november; Galaxer's CI writes <version>/ and flips latest/).
       // Buttons keep pointing at the Releases URL either way; when false they read
       // "coming soon" and don't send anyone to a 404.
       var RELEASE_LIVE = false;
