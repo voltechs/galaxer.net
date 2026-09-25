@@ -59,7 +59,7 @@
     a { color: var(--cyan); text-decoration: none; }
 
     /* ── Diegetic backdrop: deep space + blueprint grid + corner nebulae ── */
-    .backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 
     .backdrop .grid {
       position: absolute; inset: -2px;
@@ -191,26 +191,76 @@
     .skip:focus { left: 12px; top: 12px; z-index: 100; background: var(--void); color: var(--ice); padding: 10px 14px; border: 1px solid var(--cyan); }
 
     /* ── Hero ── */
-    .hero { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; }
-    .hero .mark-orbit { width: 66px; height: 66px; margin-bottom: 26px; animation: bob 7s ease-in-out infinite; }
-    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-    .wordmark { width: min(760px, 92vw); height: auto; display: block; filter: drop-shadow(0 0 40px rgba(82,239,255,0.18)); }
+    /* ── Hero: native neon menu scene ── */
+    .skybg { position: fixed; inset: 0; z-index: -2; display: none; }
+    body.has-webgl .skybg { display: block; }
+    body.has-webgl .backdrop .stars,
+    body.has-webgl .backdrop .neb { display: none; }
+
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 118px 24px 92px; }
+
+    /* rotating HUD arcs + tick rings, centered behind the wordmark */
+    .hud-rings { position: absolute; left: 50%; top: 40%; width: min(500px, 84vw); aspect-ratio: 1; transform: translate(-50%, -50%); z-index: 0; opacity: .85; pointer-events: none; }
+    .hud-rings svg { width: 100%; height: 100%; overflow: visible; }
+    .ring-a { animation: spin 66s linear infinite; transform-origin: 200px 200px; }
+    .ring-b { animation: spin 96s linear infinite reverse; transform-origin: 200px 200px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .wm-wrap { position: relative; width: min(760px, 92vw); animation: bob 8s ease-in-out infinite; }
+    .wordmark { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 42px rgba(82,239,255,0.20)); }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    /* flare starburst at the wordmark's underline center */
+    .starburst { position: absolute; left: 50%; top: 85.5%; width: 130px; height: 130px; transform: translate(-50%,-50%); pointer-events: none; }
+    .starburst i { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); animation: flare 4.5s ease-in-out infinite; }
+    .starburst .core { width: 9px; height: 9px; border-radius: 50%; background: #eafcff; box-shadow: 0 0 12px 3px rgba(146,246,255,.95), 0 0 34px 10px rgba(82,239,255,.5); }
+    .starburst .rh { width: 130px; height: 2px; background: linear-gradient(90deg, transparent, rgba(146,246,255,.85), transparent); }
+    .starburst .rv { width: 2px; height: 54px; background: linear-gradient(180deg, transparent, rgba(146,246,255,.6), transparent); }
+    @keyframes flare { 0%,100% { opacity: .75; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.18); } }
+
     .hero .tag {
       font-family: 'Chakra Petch', sans-serif; font-weight: 500;
-      font-size: clamp(1rem, 2.3vw, 1.35rem); color: var(--text); letter-spacing: .04em;
-      margin-top: 8px; max-width: 32ch;
+      font-size: clamp(1rem, 2.2vw, 1.3rem); color: var(--text); letter-spacing: .04em;
+      margin-top: 12px; max-width: 34ch;
     }
     .hero .tag .en { color: var(--cyan); }
     .hero .tag .em { color: var(--magenta); }
-    .cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 34px; }
-    .cta-note { margin-top: 16px; font-size: .8rem; color: var(--muted-2); letter-spacing: .02em; }
-    .cta-note b { color: var(--muted); font-weight: 600; }
-    .platform-chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
-    .chip {
-      font-family: 'Chakra Petch', sans-serif; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
-      color: var(--muted); border: 1px solid var(--line-soft); padding: 5px 12px;
+
+    /* in-game style menu panel holding the CTAs */
+    .menu-panel {
+      margin-top: 30px; width: min(432px, 94vw); padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      background: rgba(6,14,24,0.60); border: 1px solid var(--line);
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      box-shadow: inset 0 0 40px rgba(82,239,255,0.06), 0 22px 60px rgba(0,0,0,.5);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     }
-    .chip b { color: var(--cyan); font-weight: 600; }
+    .menu-btn {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 13px 18px; font-family: 'Chakra Petch', sans-serif; font-weight: 600; letter-spacing: .04em; font-size: .95rem;
+      color: var(--cyan); background: rgba(82,239,255,0.03); border: 1px solid var(--line); text-decoration: none;
+      clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+      transition: background .2s, border-color .2s, color .2s, box-shadow .2s; text-align: left; cursor: pointer;
+    }
+    .menu-btn:hover { background: rgba(82,239,255,0.09); border-color: var(--cyan); color: var(--ice); box-shadow: var(--glow-cyan); }
+    .menu-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .menu-btn .l { display: inline-flex; align-items: center; gap: 11px; }
+    .menu-btn .ic { width: 17px; height: 17px; flex: none; }
+    .menu-btn .r { font-weight: 500; font-size: .7rem; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+    .menu-btn.primary { color: #061319; background: linear-gradient(180deg, rgba(127,246,255,.96), rgba(34,207,230,.92)); border-color: #9ff8ff; box-shadow: 0 0 22px rgba(82,239,255,0.3); }
+    .menu-btn.primary .r { color: rgba(6,19,25,.72); }
+    .menu-btn.primary:hover { color: #061319; box-shadow: 0 0 34px rgba(82,239,255,0.55); }
+    .menu-btn.primary.soon { color: var(--muted); background: rgba(82,239,255,0.03); border-color: var(--line-soft); box-shadow: none; cursor: default; }
+    .menu-btn.primary.soon:hover { color: var(--text); border-color: var(--line); box-shadow: none; }
+    .menu-btn.primary.soon .r { color: var(--muted-2); }
+    .menu-btn.soon .lbl-live { display: none; }
+    .menu-btn:not(.soon) .lbl-soon { display: none; }
+    .menu-btn.muted { color: var(--muted-2); background: transparent; border-color: var(--line-soft); cursor: default; }
+    .menu-btn.muted:hover { color: var(--muted); border-color: var(--line-soft); box-shadow: none; background: transparent; }
+
+    .hero-micro { margin-top: 16px; font-size: .78rem; color: var(--muted-2); letter-spacing: .02em; }
+    .hero-micro b { color: var(--muted); font-weight: 600; }
 
     /* ── Showcase (framed app window) ── */
     .showcase { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
@@ -324,6 +374,8 @@
 <body>
   <a class="skip" href="#download">Skip to download</a>
 
+  <canvas id="skybg" class="skybg" aria-hidden="true"></canvas>
+
   <div class="backdrop" aria-hidden="true">
     <div class="grid"></div>
     <div class="stars"></div>
@@ -352,21 +404,59 @@
 
     <!-- HERO -->
     <section class="hero" id="hero">
-      <img class="mark-orbit" src="assets/img/mark.svg" alt="" width="66" height="66">
-      <img class="wordmark" src="assets/img/wordmark.svg" alt="Galaxer">
-      <p class="tag">Planets grow fleets. You send them. The <span class="en">last commander</span> standing takes the <span class="em">galaxy</span>.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary soon" href="https://github.com/voltechs/galaxer.net/releases/latest/download/Galaxer.dmg" id="dl-hero" data-dl>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
-          <span class="lbl-live">Download for macOS</span><span class="lbl-soon">Download &mdash; coming soon</span>
-        </a>
-        <a class="btn" href="#play">See how it plays</a>
+      <div class="hud-rings" aria-hidden="true">
+        <svg viewBox="0 0 400 400" fill="none">
+          <g class="ring-a">
+            <circle cx="200" cy="200" r="150" stroke="rgba(82,239,255,0.22)" stroke-width="1"/>
+            <circle cx="200" cy="200" r="150" stroke="rgba(140,242,255,0.85)" stroke-width="2.5" stroke-dasharray="150 320" stroke-linecap="round"/>
+            <circle cx="200" cy="200" r="170" stroke="rgba(82,239,255,0.35)" stroke-width="7" stroke-dasharray="1.6 13"/>
+          </g>
+          <g class="ring-b">
+            <circle cx="200" cy="200" r="120" stroke="rgba(141,92,255,0.22)" stroke-width="1"/>
+            <circle cx="200" cy="200" r="120" stroke="rgba(255,43,255,0.55)" stroke-width="2" stroke-dasharray="66 314" stroke-linecap="round"/>
+            <circle cx="200" cy="200" r="188" stroke="rgba(82,239,255,0.16)" stroke-width="1" stroke-dasharray="3 22"/>
+          </g>
+        </svg>
       </div>
-      <p class="cta-note">Free · <b>Universal</b> — Apple Silicon + Intel · first launch needs one right-click — <a href="#download">here's why</a></p>
-      <div class="platform-chips">
-        <span class="chip">Real-time <b>RTS</b></span>
-        <span class="chip">Up to <b>16</b> players</span>
-        <span class="chip">Campaign + Skirmish</span>
+
+      <div class="hero-stage">
+        <div class="wm-wrap">
+          <img class="wordmark" src="assets/img/wordmark.svg" alt="Galaxer">
+          <span class="starburst" aria-hidden="true"><i class="rh"></i><i class="rv"></i><i class="core"></i></span>
+        </div>
+
+        <p class="tag">Planets grow fleets. You send them. The <span class="en">last commander</span> standing takes the <span class="em">galaxy</span>.</p>
+
+        <nav class="menu-panel" aria-label="Get Galaxer">
+          <a class="menu-btn primary soon" href="https://github.com/voltechs/galaxer.net/releases/latest/download/Galaxer.dmg" id="dl-hero" data-dl>
+            <span class="l">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+              <span class="lbl-live">Download for macOS</span><span class="lbl-soon">Download &mdash; coming soon</span>
+            </span>
+            <span class="r">31 MB</span>
+          </a>
+          <span class="menu-btn muted" role="button" aria-disabled="true">
+            <span class="l">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H4z"/><path d="M2 21h20"/></svg>
+              Windows
+            </span>
+            <span class="r">coming soon</span>
+          </span>
+          <a class="menu-btn" href="#play">
+            <span class="l">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg>
+              See how it plays
+            </span>
+          </a>
+          <a class="menu-btn" href="#gallery">
+            <span class="l">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="m3 14 5-4 4 3 3-2 6 5"/></svg>
+              Screenshots
+            </span>
+          </a>
+        </nav>
+
+        <p class="hero-micro">Free · <b>Universal</b> — Apple Silicon + Intel · <a href="#download">why the right-click?</a></p>
       </div>
     </section>
 
@@ -594,7 +684,88 @@
       }, { passive: true });
       upd();
       var y = document.getElementById('yr'); if (y) y.textContent = new Date().getFullYear();
+
+      // ── WebGL2 neon sky: twinkling stars + domain-warped fBm nebula ──
+      initSky();
     })();
+
+    function initSky() {
+      var canvas = document.getElementById('skybg');
+      if (!canvas) return;
+      var gl;
+      try { gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'low-power', depth: false, stencil: false }); }
+      catch (e) { gl = null; }
+      if (!gl) return; // CSS fallback stays
+
+      var VS = '#version 300 es\nvoid main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.0-1.0,0.0,1.0);}';
+      var FS = '#version 300 es\nprecision highp float;out vec4 o;uniform vec2 uRes;uniform float uTime;uniform vec2 uMouse;uniform float uMotion;\n' +
+        'float hash(vec2 p){p=fract(p*vec2(123.34,345.45));p+=dot(p,p+34.345);return fract(p.x*p.y);}\n' +
+        'float vnoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);float a=hash(i),b=hash(i+vec2(1,0)),c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}\n' +
+        'float fbm(vec2 p){float s=0.0,a=0.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<5;i++){s+=a*vnoise(p);p=m*p;a*=0.5;}return s;}\n' +
+        'float star(vec2 uv,float dens,float sz){vec2 g=uv*dens;vec2 id=floor(g);float h=hash(id);if(h<0.965)return 0.0;vec2 f=fract(g)-0.5;vec2 c=(vec2(hash(id+1.3),hash(id+2.7))-0.5)*0.7;float d=length(f-c);float b=smoothstep(sz,0.0,d);float tw=0.55+0.45*sin(uTime*(1.5+h*2.5)+h*6.28);return b*mix(1.0,tw,uMotion);}\n' +
+        'void main(){vec2 uv=gl_FragCoord.xy/uRes.xy;vec2 p=(gl_FragCoord.xy-0.5*uRes.xy)/uRes.y;vec2 par=uMouse*0.03*uMotion;\n' +
+        'vec2 q=p*1.2+par+vec2(0.0,uTime*0.008*uMotion);vec2 w=vec2(fbm(q),fbm(q+vec2(5.2,1.3)));float n=fbm(q+1.8*w+vec2(uTime*0.01*uMotion,0.0));n=smoothstep(0.32,1.0,n);\n' +
+        'float dl=1.0-clamp(length(uv-vec2(0.13,0.16))*1.05,0.0,1.0);float dr=1.0-clamp(length(uv-vec2(0.87,0.13))*1.05,0.0,1.0);\n' +
+        'vec3 cyan=vec3(0.10,0.62,1.0),mag=vec3(1.0,0.16,0.9);vec3 neb=(cyan*dl+mag*dr)*n*0.78;\n' +
+        'vec3 col=vec3(0.012,0.02,0.05)*(1.0-uv.y*0.45);col+=neb;\n' +
+        'float s=star(uv+0.5,90.0,0.06)*0.9+star(uv*1.7+3.1,140.0,0.045)*0.7+star(uv*2.6+7.7,220.0,0.03)*0.5;\n' +
+        'col+=vec3(0.9,0.95,1.0)*s;col*=smoothstep(1.35,0.35,length(uv-0.5));o=vec4(col,1.0);}';
+
+      function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+      var prog;
+      try {
+        prog = gl.createProgram();
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+        gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+      } catch (e) { return; } // compile/link failed → CSS fallback stays
+      gl.useProgram(prog);
+      document.body.classList.add('has-webgl');
+
+      var uRes = gl.getUniformLocation(prog, 'uRes'),
+          uTime = gl.getUniformLocation(prog, 'uTime'),
+          uMouse = gl.getUniformLocation(prog, 'uMouse'),
+          uMotion = gl.getUniformLocation(prog, 'uMotion');
+      var vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+
+      var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var mouse = [0, 0], targ = [0, 0];
+      function resize() {
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        var w = window.innerWidth, h = window.innerHeight;
+        canvas.width = Math.max(1, Math.floor(w * dpr)); canvas.height = Math.max(1, Math.floor(h * dpr));
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+      if (motionOK) window.addEventListener('pointermove', function (e) {
+        targ = [e.clientX / window.innerWidth - 0.5, -(e.clientY / window.innerHeight - 0.5)];
+      }, { passive: true });
+
+      function draw(t) {
+        mouse[0] += (targ[0] - mouse[0]) * 0.05; mouse[1] += (targ[1] - mouse[1]) * 0.05;
+        gl.uniform2f(uRes, canvas.width, canvas.height);
+        gl.uniform1f(uTime, t);
+        gl.uniform2f(uMouse, mouse[0], mouse[1]);
+        gl.uniform1f(uMotion, motionOK ? 1 : 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+      draw(0); // first frame (also the only frame under reduced-motion)
+
+      if (motionOK) {
+        var raf = null, start = performance.now(), running = false;
+        function loop(now) { draw((now - start) / 1000); raf = requestAnimationFrame(loop); }
+        function play() { if (running) return; running = true; raf = requestAnimationFrame(loop); }
+        function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = null; }
+        document.addEventListener('visibilitychange', function () { document.hidden ? stop() : play(); });
+        var hero = document.getElementById('hero');
+        if ('IntersectionObserver' in window && hero) {
+          new IntersectionObserver(function (es) { es[0].isIntersecting ? play() : stop(); }, { threshold: 0.01 }).observe(hero);
+        } else { play(); }
+      }
+    }
   </script>
 </body>
 </html>
