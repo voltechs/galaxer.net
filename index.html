@@ -20,7 +20,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Orbitron:wght@800;900&display=swap" rel="stylesheet">
 
   <style>
     *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
@@ -199,24 +199,37 @@
 
     .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 118px 24px 92px; }
 
-    /* rotating HUD arcs + tick rings, centered behind the wordmark */
-    .hud-rings { position: absolute; left: 50%; top: 40%; width: min(500px, 84vw); aspect-ratio: 1; transform: translate(-50%, -50%); z-index: 0; opacity: .85; pointer-events: none; }
+    .hero-stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+    /* Wordmark: wide, heavy, HOLLOW neon letters — heavy font outline + bloom */
+    .wm-wrap { position: relative; display: inline-block; font-size: clamp(1.8rem, 9.6vw, 6rem); animation: bob 8s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .wordmark2 {
+      position: relative; z-index: 1; margin: 0; font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: 1em; line-height: 1; letter-spacing: .03em; white-space: nowrap; display: block; text-align: center;
+    }
+    .wordmark2 span {
+      display: inline-block; color: var(--c);
+      -webkit-text-fill-color: transparent; -webkit-text-stroke: 2px var(--c);
+      filter: drop-shadow(0 0 4px var(--c)) drop-shadow(0 0 13px var(--c));
+    }
+
+    /* HUD arcs + tick rings, centered on the wordmark, behind it, fading before the menu */
+    .hud-rings { position: absolute; left: 50%; top: 42%; width: 2.75em; height: 2.75em; transform: translate(-50%, -50%); z-index: 0; opacity: .82; pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, #000 46%, transparent 74%); mask-image: linear-gradient(to bottom, #000 46%, transparent 74%); }
     .hud-rings svg { width: 100%; height: 100%; overflow: visible; }
     .ring-a { animation: spin 66s linear infinite; transform-origin: 200px 200px; }
     .ring-b { animation: spin 96s linear infinite reverse; transform-origin: 200px 200px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .hero-stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .wm-wrap { position: relative; width: min(760px, 92vw); animation: bob 8s ease-in-out infinite; }
-    .wordmark { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 42px rgba(82,239,255,0.20)); }
-    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-    /* flare starburst at the wordmark's underline center */
-    .starburst { position: absolute; left: 50%; top: 85.5%; width: 130px; height: 130px; transform: translate(-50%,-50%); pointer-events: none; }
+    /* flare line + center starburst just under the letters */
+    .flare-wrap { position: relative; width: 90%; height: 2px; margin: -0.02em auto 0; z-index: 2; }
+    .flare-line { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, #22d3ff 22%, #8d5cff 50%, #ff2bff 78%, transparent); filter: drop-shadow(0 0 7px rgba(82,239,255,.55)); }
+    .starburst { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; transform: translate(-50%,-50%); pointer-events: none; }
     .starburst i { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); animation: flare 4.5s ease-in-out infinite; }
     .starburst .core { width: 9px; height: 9px; border-radius: 50%; background: #eafcff; box-shadow: 0 0 12px 3px rgba(146,246,255,.95), 0 0 34px 10px rgba(82,239,255,.5); }
-    .starburst .rh { width: 130px; height: 2px; background: linear-gradient(90deg, transparent, rgba(146,246,255,.85), transparent); }
-    .starburst .rv { width: 2px; height: 54px; background: linear-gradient(180deg, transparent, rgba(146,246,255,.6), transparent); }
+    .starburst .rh { width: 120px; height: 2px; background: linear-gradient(90deg, transparent, rgba(146,246,255,.85), transparent); }
+    .starburst .rv { width: 2px; height: 48px; background: linear-gradient(180deg, transparent, rgba(146,246,255,.55), transparent); }
     @keyframes flare { 0%,100% { opacity: .75; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.18); } }
 
     .hero .tag {
@@ -229,18 +242,16 @@
 
     /* in-game style menu panel holding the CTAs */
     .menu-panel {
-      margin-top: 30px; width: min(432px, 94vw); padding: 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      background: rgba(6,14,24,0.60); border: 1px solid var(--line);
-      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      margin-top: 36px; width: min(448px, 94vw); padding: 22px;
+      display: flex; flex-direction: column; gap: 14px;
+      background: rgba(6,14,24,0.60); border: 1px solid var(--line); border-radius: 6px;
       box-shadow: inset 0 0 40px rgba(82,239,255,0.06), 0 22px 60px rgba(0,0,0,.5);
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     }
     .menu-btn {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 13px 18px; font-family: 'Chakra Petch', sans-serif; font-weight: 600; letter-spacing: .04em; font-size: .95rem;
-      color: var(--cyan); background: rgba(82,239,255,0.03); border: 1px solid var(--line); text-decoration: none;
-      clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+      padding: 16px 20px; font-family: 'Chakra Petch', sans-serif; font-weight: 600; letter-spacing: .04em; font-size: .95rem;
+      color: var(--cyan); background: rgba(82,239,255,0.03); border: 1px solid var(--line); border-radius: 4px; text-decoration: none;
       transition: background .2s, border-color .2s, color .2s, box-shadow .2s; text-align: left; cursor: pointer;
     }
     .menu-btn:hover { background: rgba(82,239,255,0.09); border-color: var(--cyan); color: var(--ice); box-shadow: var(--glow-cyan); }
@@ -404,25 +415,27 @@
 
     <!-- HERO -->
     <section class="hero" id="hero">
-      <div class="hud-rings" aria-hidden="true">
-        <svg viewBox="0 0 400 400" fill="none">
-          <g class="ring-a">
-            <circle cx="200" cy="200" r="150" stroke="rgba(82,239,255,0.22)" stroke-width="1"/>
-            <circle cx="200" cy="200" r="150" stroke="rgba(140,242,255,0.85)" stroke-width="2.5" stroke-dasharray="150 320" stroke-linecap="round"/>
-            <circle cx="200" cy="200" r="170" stroke="rgba(82,239,255,0.35)" stroke-width="7" stroke-dasharray="1.6 13"/>
-          </g>
-          <g class="ring-b">
-            <circle cx="200" cy="200" r="120" stroke="rgba(141,92,255,0.22)" stroke-width="1"/>
-            <circle cx="200" cy="200" r="120" stroke="rgba(255,43,255,0.55)" stroke-width="2" stroke-dasharray="66 314" stroke-linecap="round"/>
-            <circle cx="200" cy="200" r="188" stroke="rgba(82,239,255,0.16)" stroke-width="1" stroke-dasharray="3 22"/>
-          </g>
-        </svg>
-      </div>
-
       <div class="hero-stage">
         <div class="wm-wrap">
-          <img class="wordmark" src="assets/img/wordmark.svg" alt="Galaxer">
-          <span class="starburst" aria-hidden="true"><i class="rh"></i><i class="rv"></i><i class="core"></i></span>
+          <div class="hud-rings" aria-hidden="true">
+            <svg viewBox="0 0 400 400" fill="none">
+              <g class="ring-a">
+                <circle cx="200" cy="200" r="150" stroke="rgba(82,239,255,0.22)" stroke-width="1"/>
+                <circle cx="200" cy="200" r="150" stroke="rgba(140,242,255,0.85)" stroke-width="2.5" stroke-dasharray="150 320" stroke-linecap="round"/>
+                <circle cx="200" cy="200" r="170" stroke="rgba(82,239,255,0.35)" stroke-width="7" stroke-dasharray="1.6 13"/>
+              </g>
+              <g class="ring-b">
+                <circle cx="200" cy="200" r="120" stroke="rgba(141,92,255,0.22)" stroke-width="1"/>
+                <circle cx="200" cy="200" r="120" stroke="rgba(255,43,255,0.55)" stroke-width="2" stroke-dasharray="66 314" stroke-linecap="round"/>
+                <circle cx="200" cy="200" r="188" stroke="rgba(82,239,255,0.16)" stroke-width="1" stroke-dasharray="3 22"/>
+              </g>
+            </svg>
+          </div>
+          <h1 class="wordmark2" aria-label="Galaxer"><span style="--c:#00e5ff">G</span><span style="--c:#17c8ff">A</span><span style="--c:#33a9ff">L</span><span style="--c:#6f6cff">A</span><span style="--c:#a94dff">X</span><span style="--c:#d838f0">E</span><span style="--c:#ff2bff">R</span></h1>
+          <div class="flare-wrap" aria-hidden="true">
+            <div class="flare-line"></div>
+            <span class="starburst"><i class="rh"></i><i class="rv"></i><i class="core"></i></span>
+          </div>
         </div>
 
         <p class="tag">Planets grow fleets. You send them. The <span class="en">last commander</span> standing takes the <span class="em">galaxy</span>.</p>
