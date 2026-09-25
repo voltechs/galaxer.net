@@ -448,12 +448,12 @@
             </span>
             <span class="r">31 MB</span>
           </a>
-          <span class="menu-btn muted" role="button" aria-disabled="true">
+          <span class="menu-btn muted" role="button" aria-disabled="true" id="dl-win">
             <span class="l">
               <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H4z"/><path d="M2 21h20"/></svg>
-              Windows
+              <span class="win-label">Windows</span>
             </span>
-            <span class="r">coming soon</span>
+            <span class="r win-chip">coming soon</span>
           </span>
           <a class="menu-btn" href="#play">
             <span class="l">
@@ -667,26 +667,117 @@
         el.textContent = MIN_MACOS;
       });
 
-      // Release gate — flip to true the moment the DMG is posted to GitHub Releases.
-      // Buttons keep pointing at the Releases URL either way; when false they read
-      // "coming soon" and don't send anyone to a 404.
+      // ── Downloads ──────────────────────────────────────────────────────
+      // DL_BASE is the ONE place the download host lives. It must be the base
+      // that serves both `version.json` and the binaries, so that
+      //   DL_BASE + '/version.json'  and  DL_BASE + '/Galaxer.dmg'  both resolve.
+      //   GitHub Releases : https://github.com/voltechs/galaxer.net/releases/latest/download
+      //   november        : https://downloads.galaxer.net/latest
+      // Swap this single constant when the host is confirmed.
+      var DL_BASE = 'https://github.com/voltechs/galaxer.net/releases/latest/download';
+      // Manual override. true forces the live state even without a manifest;
+      // false leaves the page in "coming soon" until a fetched version.json says
+      // otherwise. A reachable manifest (below) auto-flips to live on its own.
       var RELEASE_LIVE = false;
+
       var dlBtns = document.querySelectorAll('[data-dl]');
       var soonNote = document.getElementById('soon-note');
-      if (RELEASE_LIVE) {
-        Array.prototype.forEach.call(dlBtns, function (b) { b.classList.remove('soon'); b.removeAttribute('aria-disabled'); });
-        if (soonNote) soonNote.hidden = true;
-      } else {
+      var guards = [];
+
+      function q(sel) { return document.querySelector(sel); }
+      function setText(sel, val) {
+        if (val == null) return;
+        Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) { el.textContent = val; });
+      }
+      function fmtMB(bytes) {
+        var n = Number(bytes);
+        return (n && n > 0) ? Math.round(n / 1048576) + ' MB' : null;
+      }
+
+      function goSoon() {
         Array.prototype.forEach.call(dlBtns, function (b) {
           b.classList.add('soon');
           b.setAttribute('aria-disabled', 'true');
-          b.addEventListener('click', function (e) {
+          var fn = function (e) {
             e.preventDefault();
             var d = document.getElementById('download');
             if (d) d.scrollIntoView({ behavior: 'smooth' });
-          });
+          };
+          b.addEventListener('click', fn);
+          guards.push({ el: b, fn: fn });
         });
+        if (soonNote) soonNote.hidden = false;
       }
+
+      // info: { href, size, version, minOs, published, signed, notes, win }
+      function goLive(info) {
+        info = info || {};
+        Array.prototype.forEach.call(dlBtns, function (b) {
+          b.classList.remove('soon');
+          b.removeAttribute('aria-disabled');
+          if (info.href && (b.id === 'dl-hero' || b.id === 'dl-main')) b.setAttribute('href', info.href);
+        });
+        guards.forEach(function (g) { g.el.removeEventListener('click', g.fn); });
+        guards = [];
+        if (soonNote) soonNote.hidden = true;
+
+        if (info.size) { setText('#dl-size', info.size); setText('#req-disk', info.size); var hr = q('#dl-hero .r'); if (hr) hr.textContent = info.size; }
+        if (info.version) { setText('#ver-name', info.version); setText('#dl-ver', info.version); setText('#cl-ver', info.version); }
+        if (info.minOs) setText('.js-macos', info.minOs);
+        if (info.published) setText('#cl-date', info.published);
+        if (info.signed) { var g = q('.gate'); if (g) g.style.display = 'none'; }
+        if (typeof info.notes === 'string' && info.notes.trim()) {
+          var ul = q('.changelog ul');
+          if (ul) {
+            ul.innerHTML = '';
+            info.notes.split(/\r?\n/).forEach(function (line) {
+              line = line.replace(/^\s*[-*•]\s*/, '').trim();
+              if (!line) return;
+              var li = document.createElement('li'); li.textContent = line; ul.appendChild(li);
+            });
+          }
+        }
+        // Windows, when a real build is present
+        var win = info.win;
+        if (win && win.url && Number(win.size) > 200000) {
+          var wb = q('#dl-win');
+          if (wb) {
+            wb.classList.remove('muted');
+            wb.removeAttribute('aria-disabled');
+            wb.style.cursor = 'pointer';
+            var wl = q('#dl-win .win-label'); if (wl) wl.textContent = 'Download for Windows';
+            var wc = q('#dl-win .win-chip'); if (wc) wc.textContent = fmtMB(win.size) || 'x64';
+            wb.addEventListener('click', function () { window.location.href = win.url; });
+          }
+        }
+      }
+
+      // Initial state from the manual override, then try the live manifest.
+      if (RELEASE_LIVE) goLive(); else goSoon();
+
+      (function tryManifest() {
+        if (!window.fetch) return;
+        var url = DL_BASE + '/version.json';
+        fetch(url, { cache: 'no-store' })
+          .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+          .then(function (m) {
+            if (!m || m.schema !== 1 || !m.downloads || !m.downloads.macos) return;
+            var mac = m.downloads.macos;
+            var ver = m.version || '';
+            if (m.channel && m.channel !== 'stable') ver = (ver + ' ' + m.channel.charAt(0).toUpperCase() + m.channel.slice(1)).trim();
+            goLive({
+              href: mac.url || (DL_BASE + '/' + (mac.file || 'Galaxer.dmg')),
+              size: fmtMB(mac.size),
+              version: ver || null,
+              minOs: mac.min_os ? (mac.min_os + '+') : null,
+              published: m.published ? new Date(m.published).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : null,
+              signed: !!mac.signed,
+              notes: m.notes || null,
+              win: m.downloads.windows || null
+            });
+          })
+          .catch(function () { /* manifest unreachable (offline / CORS / 404) — keep the manual state */ });
+      })();
 
       // Nav gains a background once you scroll past the hero lip.
       var nav = document.getElementById('nav');
